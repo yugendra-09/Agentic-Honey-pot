@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { HoneyPotResponse, Message } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const RESPONSE_SCHEMA = {
   type: Type.OBJECT,
@@ -35,7 +35,6 @@ const RESPONSE_SCHEMA = {
   },
   required: ["is_scam", "confidence", "reasoning", "agent_response", "extracted_intelligence"]
 };
-
 export const processScamMessage = async (history: Message[]): Promise<HoneyPotResponse> => {
   const conversationString = history
     .map(m => `${m.role.toUpperCase()}: ${m.content}`)
