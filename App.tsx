@@ -1,9 +1,9 @@
 
+import { analyzeConversation } from "./services/api";
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Shield, Send, Terminal, Database, Activity, AlertTriangle, Play, RefreshCw, Trash2, Cpu } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Message, Session, HoneyPotResponse } from './types';
-import { processScamMessage } from './services/geminiService';
 import { IntelligenceCard } from './components/IntelligenceCard';
 
 const MOCK_SCAMMER_INPUTS = [
@@ -79,7 +79,8 @@ const App: React.FC = () => {
       setIsProcessing(true);
       try {
         const history = [...(activeSession?.messages || []), newMessage];
-        const result: HoneyPotResponse = await processScamMessage(history);
+        const result: HoneyPotResponse = await analyzeConversation(history);
+
 
         const agentMessage: Message = {
           id: (Date.now() + 1).toString(),

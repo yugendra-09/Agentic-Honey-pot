@@ -1,6 +1,17 @@
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// resolve backend/.env explicitly
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({
+  path: path.resolve(__dirname, "../.env")
+});
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { HoneyPotResponse, Message } from "../types";
+import { HoneyPotResponse, Message } from "./types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
