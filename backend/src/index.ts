@@ -14,7 +14,7 @@ app.use(express.json());
 
 // health check
 app.get("/", (_req, res) => {
-  res.send("Sentinel Agentic Honey Pot backend is running 🚀");
+  res.send("Backend API is running");
 });
 
 // main API endpoint
@@ -38,4 +38,4 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
-});
+  });
