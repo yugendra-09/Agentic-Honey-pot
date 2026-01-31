@@ -78,8 +78,15 @@ const App: React.FC = () => {
     if (role === 'scammer') {
       setIsProcessing(true);
       try {
-        const history = [...(activeSession?.messages || []), newMessage];
-        const result: HoneyPotResponse = await analyzeConversation(history);
+      const updatedSession = sessions.find(s => s.id === activeSessionId);
+
+const history = [
+  ...(updatedSession?.messages || []),
+  newMessage
+];
+
+const result: HoneyPotResponse = await analyzeConversation(history);
+
 
 
         const agentMessage: Message = {
