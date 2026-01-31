@@ -1,0 +1,8 @@
+{
+  "name": "Sentinel-Agentic-Honey-Pot",
+  "description": "An AI-powered scam detection and intelligence extraction dashboard that autonomously engages scammers to retrieve payout details and phishing links.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
