@@ -1,6 +1,7 @@
 import { Message, HoneyPotResponse } from "../types";
 
-const API_URL = "http://localhost:5000/api/analyze";
+const API_URL = "https://agentic-honey-pot-42kv.onrender.com/api/analyze";
+
 
 export async function analyzeConversation(
   history: Message[]
