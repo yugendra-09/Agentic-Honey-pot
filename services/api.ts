@@ -17,7 +17,8 @@ export async function analyzeConversation(
   });
 
   if (!response.ok) {
-    throw new Error("Backend analysis failed");
+    const text = await response.text();
+    throw new Error(text);
   }
 
   return response.json();
