@@ -8,13 +8,8 @@ dotenv.config();
 
 const app = express();
 
-// ✅ CORS (THIS IS THE PART YOU ASKED ABOUT)
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"]
-}));
-
+// middleware
+app.use(cors());
 app.use(express.json());
 
 // health check
@@ -43,4 +38,4 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
-});
+  });
