@@ -240,7 +240,8 @@ const result: HoneyPotResponse = await analyzeConversation(history);
               </div>
 
               <div className="flex gap-3">
-                <button 
+
+               <button 
                   onClick={simulateScammer}
                   disabled={isProcessing}
                   className="bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/20 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all disabled:opacity-50"
@@ -248,6 +249,7 @@ const result: HoneyPotResponse = await analyzeConversation(history);
                   <AlertTriangle className="w-4 h-4" />
                   Trigger Mock Scammer
                 </button>
+
                 <button 
                   onClick={() => {}} 
                   className="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all"
