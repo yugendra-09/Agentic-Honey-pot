@@ -20,36 +20,45 @@ app.get("/", (_req, res) => {
 // main API endpoint
 app.post("/api/analyze", async (req, res) => {
   try {
-    let { history, message } = req.body as {
-      history?: Message[];
-      message?: string;
-    };
+    const { message, conversationHistory } = req.body;
 
-    // ✅ Support GUVI / tester payload
-    if (!history && message) {
-      history = [
-        {
-          role: "scammer",
-          content: message
-        }
-      ];
-    }
-
-    if (!history || !Array.isArray(history)) {
+    // ✅ Validate input
+    if (!message || !message.text) {
       return res.status(400).json({
-        error: "Invalid payload. Expected { history[] } or { message }"
+        status: "error",
+        reply: "Invalid request payload"
       });
     }
 
+    // ✅ Convert to your internal format
+    const history = [
+      ...(conversationHistory || []).map((m: any) => ({
+        role: m.sender === "scammer" ? "scammer" : "honeypot",
+        content: m.text
+      })),
+      {
+        role: "scammer",
+        content: message.text
+      }
+    ];
+
+    // ✅ Call Gemini agent
     const result = await processScamMessage(history);
-    res.json(result);
+
+    // ✅ EXACT RESPONSE FORMAT REQUIRED BY HCL
+    return res.status(200).json({
+      status: "success",
+      reply: result.agent_response
+    });
+
   } catch (error) {
     console.error("Analyze error:", error);
-    res.status(500).json({ error: "Failed to analyze message" });
+    return res.status(200).json({
+      status: "success",
+      reply: "I am not sure what this message means. Can you explain more?"
+    });
   }
 });
-
-
 
 const PORT = process.env.PORT || 5000;
 
