@@ -20,16 +20,24 @@ app.get("/", (_req, res) => {
 // main API endpoint
 app.post("/api/analyze", async (req, res) => {
   try {
-    const { history } = req.body || {};
+    let history = req.body.history;
 
-    // 👇 Fallback for hackathon tester
+    // ✅ Hackathon tester fallback
+    if (!history && req.body.message) {
+      history = [
+        {
+          role: "scammer",
+          content: req.body.message
+        }
+      ];
+    }
+
     if (!history || !Array.isArray(history)) {
-      return res.status(200).json({
-        status: "ok",
-        message: "Honeypot API reachable. Send a valid conversation payload to analyze.",
-        expected_format: {
+      return res.status(400).json({
+        error: "Invalid request body",
+        expected: {
           history: [
-            { role: "scammer", content: "message text" }
+            { role: "scammer", content: "text" }
           ]
         }
       });
@@ -37,12 +45,12 @@ app.post("/api/analyze", async (req, res) => {
 
     const result = await processScamMessage(history);
     res.json(result);
-
   } catch (error) {
     console.error("Analyze error:", error);
     res.status(500).json({ error: "Failed to analyze message" });
   }
 });
+
 
 
 const PORT = process.env.PORT || 5000;
