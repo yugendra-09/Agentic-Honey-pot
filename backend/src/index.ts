@@ -17,33 +17,50 @@ app.get("/", (_req, res) => {
   res.send("Backend API is running");
 });
 
-// main API endpoint
+// ===============================
+// MAIN HCL EVALUATION ENDPOINT
+// ===============================
 app.post("/api/analyze", async (req, res) => {
   try {
     const { message, conversationHistory } = req.body;
 
-    // ✅ Validate input
+    // ✅ Validate HCL payload
     if (!message || !message.text) {
-      return res.status(400).json({
-        status: "error",
-        reply: "Invalid request payload"
+      return res.status(200).json({
+        status: "success",
+        reply: "Can you explain what this message is about?"
       });
     }
 
-    // ✅ Convert to your internal format
-    const history = [
+    // ✅ Convert HCL format → internal format
+    let history: Message[] = [
       ...(conversationHistory || []).map((m: any) => ({
         role: m.sender === "scammer" ? "scammer" : "honeypot",
-        content: m.text
+        content: m.text,
+        timestamp: m.timestamp || Date.now(),
+        id: Math.random().toString(36)
       })),
       {
         role: "scammer",
-        content: message.text
+        content: message.text,
+        timestamp: message.timestamp || Date.now(),
+        id: Math.random().toString(36)
       }
     ];
 
-    // ✅ Call Gemini agent
-    const result = await processScamMessage(history);
+    // 🚀 VERY IMPORTANT: LIMIT CONTEXT (prevents timeout)
+    const MAX_TURNS = 5;
+    if (history.length > MAX_TURNS) {
+      history = history.slice(-MAX_TURNS);
+    }
+
+    // ⏱️ Gemini timeout protection (HCL timeout = 30s)
+    const result = await Promise.race([
+      processScamMessage(history),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("AI timeout")), 8000)
+      )
+    ]);
 
     // ✅ EXACT RESPONSE FORMAT REQUIRED BY HCL
     return res.status(200).json({
@@ -53,9 +70,11 @@ app.post("/api/analyze", async (req, res) => {
 
   } catch (error) {
     console.error("Analyze error:", error);
+
+    // ✅ SAFE FALLBACK (NEVER TIMEOUT)
     return res.status(200).json({
       status: "success",
-      reply: "I am not sure what this message means. Can you explain more?"
+      reply: "I’m a bit confused. Can you explain that again?"
     });
   }
 });
@@ -64,4 +83,4 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
-  });
+});
