@@ -20,26 +20,24 @@ app.get("/", (_req, res) => {
 // main API endpoint
 app.post("/api/analyze", async (req, res) => {
   try {
-    let history = req.body.history;
+    let { history, message } = req.body as {
+      history?: Message[];
+      message?: string;
+    };
 
-    // ✅ Hackathon tester fallback
-    if (!history && req.body.message) {
+    // ✅ Support GUVI / tester payload
+    if (!history && message) {
       history = [
         {
           role: "scammer",
-          content: req.body.message
+          content: message
         }
       ];
     }
 
     if (!history || !Array.isArray(history)) {
       return res.status(400).json({
-        error: "Invalid request body",
-        expected: {
-          history: [
-            { role: "scammer", content: "text" }
-          ]
-        }
+        error: "Invalid payload. Expected { history[] } or { message }"
       });
     }
 
